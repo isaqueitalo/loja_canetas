@@ -30,7 +30,7 @@ class Caneta:
     @acionamento_por_botao.setter
     def acionamento_por_botao(self, valor: bool) -> None:
         if self._cor == "vermelha" and not valor:
-            raise ValueError("Caneta vermelha só pode ser acionada por botão!")
+            raise ValueError("⚠️ Caneta vermelha só pode ser acionada por botão!")
         self._acionamento_por_botao = valor
 
     # ===== preço =====
@@ -38,7 +38,6 @@ class Caneta:
     def preco_por_caixa(self) -> float:
         return self._cores_precos[self._cor]
 
-    # ===== representação =====
     def __str__(self):
         return (f"Caneta(cor={self._cor}, "
                 f"botão={'Sim' if self._acionamento_por_botao else 'Não'}, "
@@ -46,53 +45,110 @@ class Caneta:
 
 
 # =====================
-# Carrinho de Compras
+# Carrinho de Compras (menu numerado)
 # =====================
-print("=== 🖊️ Loja de Canetas ===")
-print("Confira nossas opções de canetas (preço por caixa):\n")
+print("=== 🖊️ Loja de Canetas ===\n")
 
-for cor, preco in Caneta._cores_precos.items():
-    if cor == "vermelha":
-        descricao = "⚠️ somente COM botão"
-    else:
-        descricao = "disponível com ou sem botão"
-    print(f"- {cor.capitalize()} → R$ {preco:.2f} ({descricao})")
+opcoes_cores = {
+    1: "azul",
+    2: "vermelha",
+    3: "dourada"
+}
+
+def mostrar_menu_cores():
+    print("Opções disponíveis (preço por caixa):")
+    for numero, cor in opcoes_cores.items():
+        preco = Caneta._cores_precos[cor]
+        regra = "⚠️ somente COM botão" if cor == "vermelha" else "com ou sem botão"
+        print(f"{numero} - {cor.capitalize()} (R$ {preco:.2f}, {regra})")
 
 carrinho = []
 total = 0.0
 
 while True:
-    try:
-        cor = input("\nEscolha a cor da caneta desejada: ").strip().lower()
-
-        botao_input = input("Você deseja com acionamento por botão? (s/n): ").strip().lower()
-        botao = True if botao_input == "s" else False
-
-        quantidade = int(input("Digite a quantidade de caixas: "))
-
-        caneta = Caneta(cor, botao)
-        subtotal = caneta.preco_por_caixa * quantidade
-
-        carrinho.append((caneta, quantidade, subtotal))
-        total += subtotal
-
-        print(f"✅ {quantidade} caixa(s) de caneta {cor} adicionada(s) ao carrinho!")
-
-        continuar = input("\nDeseja comprar outra caneta? (s/n): ").strip().lower()
-        if continuar != "s":
+    # --- escolher cor ---
+    while True:
+        try:
+            mostrar_menu_cores()
+            escolha = int(input("Digite o número da cor desejada: "))
+            if escolha not in opcoes_cores:
+                print("❌ Opção inválida. Tente novamente.\n")
+                continue
+            cor_escolhida = opcoes_cores[escolha]
             break
+        except ValueError:
+            print("❌ Digite um número válido.\n")
 
+    # --- escolher acionamento ---
+    while True:
+        try:
+            print("\nDeseja com acionamento por botão?")
+            print("1 - Sim")
+            print("2 - Não")
+            opc = int(input("Digite a opção: "))
+            if opc not in (1, 2):
+                print("❌ Opção inválida. Tente novamente.\n")
+                continue
+            botao = (opc == 1)
+            # regra da vermelha
+            if cor_escolhida == "vermelha" and not botao:
+                print("❌ Caneta vermelha exige acionamento por botão. Escolha 'Sim'.\n")
+                continue
+            break
+        except ValueError:
+            print("❌ Digite um número válido.\n")
+
+    # --- quantidade ---
+    while True:
+        try:
+            qtd = int(input("Digite a quantidade de caixas: "))
+            if qtd <= 0:
+                print("❌ A quantidade deve ser maior que zero.\n")
+                continue
+            break
+        except ValueError:
+            print("❌ Digite um número inteiro válido.\n")
+
+    # --- cria item e adiciona ao carrinho ---
+    try:
+        item = Caneta(cor_escolhida, botao)
+        subtotal = item.preco_por_caixa * qtd
+        carrinho.append((item, qtd, subtotal))
+        total += subtotal
+        print(f"\n✅ {qtd} caixa(s) de caneta {cor_escolhida} "
+              f"{'(com botão)' if botao else '(sem botão)'} adicionada(s) ao carrinho!\n")
     except Exception as e:
-        print("❌ Erro:", e)
+        print("❌ Erro ao adicionar item:", e)
+        # volta ao início do loop para nova tentativa
+        continue
+
+    # --- continuar comprando? ---
+    while True:
+        try:
+            print("Deseja comprar outra caneta?")
+            print("1 - Sim")
+            print("2 - Finalizar compra")
+            continuar = int(input("Digite a opção: "))
+            if continuar not in (1, 2):
+                print("❌ Opção inválida. Tente novamente.\n")
+                continue
+            break
+        except ValueError:
+            print("❌ Digite um número válido.\n")
+
+    if continuar == 2:
+        break
+    print("")  # linha em branco estética
 
 # =====================
 # Resumo final
 # =====================
 print("\n=== 🛒 Resumo da Compra ===")
-for item in carrinho:
-    caneta, qtd, subtotal = item
-    print(f"- {qtd} caixa(s) de {caneta.cor} "
-          f"({'com botão' if caneta.acionamento_por_botao else 'sem botão'}) "
-          f"→ R$ {subtotal:.2f}")
-
-print(f"\n💰 Total a pagar: R$ {total:.2f}")
+if not carrinho:
+    print("Nenhum item no carrinho.")
+else:
+    for caneta, qtd, subtotal in carrinho:
+        print(f"- {qtd} caixa(s) de {caneta.cor} "
+              f"({'com botão' if caneta.acionamento_por_botao else 'sem botão'}) "
+              f"→ R$ {subtotal:.2f}")
+    print(f"\n💰 Total a pagar: R$ {total:.2f}")
