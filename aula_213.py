@@ -38,7 +38,8 @@ class Caneta:
     def preco_por_caixa(self) -> float:
         return self._cores_precos[self._cor]
 
-    def __str__(self):
+    # ===== representação =====
+    def __str__(self) -> str:
         return (f"Caneta(cor={self._cor}, "
                 f"botão={'Sim' if self._acionamento_por_botao else 'Não'}, "
                 f"preço_caixa=R$ {self.preco_por_caixa:.2f})")
@@ -115,11 +116,9 @@ while True:
         subtotal = item.preco_por_caixa * qtd
         carrinho.append((item, qtd, subtotal))
         total += subtotal
-        print(f"\n✅ {qtd} caixa(s) de caneta {cor_escolhida} "
-              f"{'(com botão)' if botao else '(sem botão)'} adicionada(s) ao carrinho!\n")
+        print(f"\n✅ {qtd} caixa(s) de {item} adicionada(s) ao carrinho!\n")
     except Exception as e:
         print("❌ Erro ao adicionar item:", e)
-        # volta ao início do loop para nova tentativa
         continue
 
     # --- continuar comprando? ---
@@ -148,7 +147,5 @@ if not carrinho:
     print("Nenhum item no carrinho.")
 else:
     for caneta, qtd, subtotal in carrinho:
-        print(f"- {qtd} caixa(s) de {caneta.cor} "
-              f"({'com botão' if caneta.acionamento_por_botao else 'sem botão'}) "
-              f"→ R$ {subtotal:.2f}")
+        print(f"- {qtd} caixa(s) de {caneta} → R$ {subtotal:.2f}")
     print(f"\n💰 Total a pagar: R$ {total:.2f}")
