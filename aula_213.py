@@ -46,20 +46,13 @@ class Caneta:
 
 
 # =====================
-# Carrinho de Compras (menu numerado)
+# Carrinho de Compras
 # =====================
 print("=== 🖊️ Loja de Canetas ===\n")
 
-opcoes_cores = {
-    1: "azul",
-    2: "vermelha",
-    3: "dourada"
-}
-
 def mostrar_menu_cores():
     print("Opções disponíveis (preço por caixa):")
-    for numero, cor in opcoes_cores.items():
-        preco = Caneta._cores_precos[cor]
+    for numero, (cor, preco) in enumerate(Caneta._cores_precos.items(), start=1):
         regra = "⚠️ somente COM botão" if cor == "vermelha" else "com ou sem botão"
         print(f"{numero} - {cor.capitalize()} (R$ {preco:.2f}, {regra})")
 
@@ -71,11 +64,12 @@ while True:
     while True:
         try:
             mostrar_menu_cores()
+            cores_disponiveis = list(Caneta._cores_precos.keys())
             escolha = int(input("Digite o número da cor desejada: "))
-            if escolha not in opcoes_cores:
+            if escolha < 1 or escolha > len(cores_disponiveis):
                 print("❌ Opção inválida. Tente novamente.\n")
                 continue
-            cor_escolhida = opcoes_cores[escolha]
+            cor_escolhida = cores_disponiveis[escolha - 1]
             break
         except ValueError:
             print("❌ Digite um número válido.\n")
@@ -140,6 +134,28 @@ while True:
     print("")  # linha em branco estética
 
 # =====================
+# Frete ou Retirada
+# =====================
+frete = 0.0
+while True:
+    try:
+        print("\nOpções de entrega:")
+        print("1 - Retirada na loja (sem custo)")
+        print("2 - Entrega com frete (R$ 20.00)")
+        opc_entrega = int(input("Digite a opção: "))
+        if opc_entrega == 1:
+            print("🚶 Retirada na loja escolhida.")
+            break
+        elif opc_entrega == 2:
+            frete = 20.0
+            print("📦 Entrega com frete escolhida.")
+            break
+        else:
+            print("❌ Opção inválida. Tente novamente.\n")
+    except ValueError:
+        print("❌ Digite um número válido.\n")
+
+# =====================
 # Resumo final
 # =====================
 print("\n=== 🛒 Resumo da Compra ===")
@@ -148,4 +164,6 @@ if not carrinho:
 else:
     for caneta, qtd, subtotal in carrinho:
         print(f"- {qtd} caixa(s) de {caneta} → R$ {subtotal:.2f}")
-    print(f"\n💰 Total a pagar: R$ {total:.2f}")
+    if frete > 0:
+        print(f"\n📦 Frete: R$ {frete:.2f}")
+    print(f"\n💰 Total a pagar: R$ {total + frete:.2f}")
