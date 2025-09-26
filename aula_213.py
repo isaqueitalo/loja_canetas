@@ -136,24 +136,56 @@ while True:
 # =====================
 # Frete ou Retirada
 # =====================
+# =====================
+# Frete ou Retirada
+# =====================
 frete = 0.0
+_fretes = {
+    "Recife (capital)": {"base": 15.0, "extra_por_caixa": 0.0},
+    "Interior de PE": {"base": 25.0, "extra_por_caixa": 2.0},
+    "Nordeste (outros estados)": {"base": 35.0, "extra_por_caixa": 3.0},
+    "Sudeste": {"base": 50.0, "extra_por_caixa": 4.0},
+    "Sul": {"base": 60.0, "extra_por_caixa": 5.0},
+    "Centro-Oeste": {"base": 55.0, "extra_por_caixa": 4.0},
+    "Norte": {"base": 70.0, "extra_por_caixa": 6.0}
+}
+
 while True:
     try:
         print("\nOpções de entrega:")
         print("1 - Retirada na loja (sem custo)")
-        print("2 - Entrega com frete (R$ 20.00)")
+        print("2 - Entrega com frete")
         opc_entrega = int(input("Digite a opção: "))
+
         if opc_entrega == 1:
             print("🚶 Retirada na loja escolhida.")
             break
         elif opc_entrega == 2:
-            frete = 20.0
-            print("📦 Entrega com frete escolhida.")
+            print("\nEscolha a região de entrega:")
+            for i, (regiao, dados) in enumerate(_fretes.items(), start=1):
+                print(f"{i} - {regiao} (R$ {dados['base']:.2f} + "
+                      f"R$ {dados['extra_por_caixa']:.2f} por caixa extra)")
+
+            escolha_regiao = int(input("Digite a opção: "))
+            if escolha_regiao < 1 or escolha_regiao > len(_fretes):
+                print("❌ Opção inválida. Tente novamente.\n")
+                continue
+
+            regiao_escolhida = list(_fretes.keys())[escolha_regiao - 1]
+            dados_frete = _fretes[regiao_escolhida]
+
+            # calcula frete total
+            total_caixas = sum(qtd for _, qtd, _ in carrinho)
+            frete = dados_frete["base"] + (dados_frete["extra_por_caixa"] * total_caixas)
+
+            print(f"📦 Entrega para {regiao_escolhida} escolhida "
+                  f"(R$ {frete:.2f} para {total_caixas} caixas).")
             break
         else:
             print("❌ Opção inválida. Tente novamente.\n")
     except ValueError:
         print("❌ Digite um número válido.\n")
+
 
 # =====================
 # Resumo final
