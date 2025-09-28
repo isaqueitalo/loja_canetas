@@ -98,10 +98,9 @@ while True:
         try:
             qtd = int(input("Digite a quantidade de caixas: "))
             if qtd <= 0:
-                print("❌ A quantidade deve ser maior que zero.\n")
-                continue
+                raise ValueError("❌ A quantidade deve ser maior que zero.\n")
             break
-        except ValueError:
+        except ValueError as e:
             print("❌ Digite um número inteiro válido.\n")
 
     # --- cria item e adiciona ao carrinho ---
