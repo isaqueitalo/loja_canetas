@@ -83,17 +83,31 @@ _fretes = {
 clientes = [
     Cliente("Ana Silva", "ana@email.com"),
     Cliente("Carlos Souza", "carlos@email.com"),
+    Cliente("Carla Dias", "carla@email.com"),
     Cliente("Mariana Lima", "mariana@email.com"),
 ]
 
 print("=== Sistema de Clientes ===")
-print("Clientes cadastrados:")
-for i, cliente in enumerate(clientes, start=1):
-    print(f"{i} - {cliente}")
+nome_busca = input("Digite o primeiro nome do cliente: ").strip().lower()
 
-escolha = int(input("\nDigite o número do cliente para fazer login: "))
-cliente_escolhido = clientes[escolha - 1]
-print(f"\n✅ Bem-vindo, {cliente_escolhido.nome}!\n")
+# Filtra clientes pelo nome digitado
+clientes_filtrados = [c for c in clientes if c.nome.lower().startswith(nome_busca)]
+
+if not clientes_filtrados:
+    print("❌ Nenhum cliente encontrado.")
+    exit()
+
+elif len(clientes_filtrados) == 1:
+    cliente_escolhido = clientes_filtrados[0]
+    print(f"\n✅ Login realizado automaticamente: {cliente_escolhido.nome}\n")
+
+else:
+    print("\nForam encontrados vários clientes:")
+    for i, cliente in enumerate(clientes_filtrados, start=1):
+        print(f"{i} - {cliente}")
+    escolha = int(input("\nDigite o número do cliente para fazer login: "))
+    cliente_escolhido = clientes_filtrados[escolha - 1]
+    print(f"\n✅ Bem-vindo, {cliente_escolhido.nome}!\n")
 
 
 # =====================
